@@ -1,6 +1,6 @@
 local player = game.Players.LocalPlayer
 local sg = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-sg.Name = "LK7_KurdStyle_Fixed_V4"
+sg.Name = "LK7_KurdStyle_V6"
 sg.ResetOnSpawn = false
 
 local VALOR_ROBUX = 100000
@@ -19,7 +19,7 @@ TopBar.Size = UDim2.new(1, 0, 0, 50)
 TopBar.BackgroundTransparency = 1
 
 local Title = Instance.new("TextLabel", TopBar)
-Title.Text = "LK7 HUB - V4 FIXED"
+Title.Text = "LK7 HUB - BRAINROT EDITION"
 Title.Size = UDim2.new(0, 300, 1, 0)
 Title.Position = UDim2.new(0, 15, 0, 0)
 Title.TextColor3 = Color3.new(1, 1, 1)
@@ -75,9 +75,7 @@ CreateTab("Fun")
 local function GetTarget()
     local text = TargetInput.Text:lower()
     local targets = {}
-    if text == "" or text == "all" then
-        return game.Players:GetPlayers()
-    end
+    if text == "" or text == "all" then return game.Players:GetPlayers() end
     for _, p in pairs(game.Players:GetPlayers()) do
         if p.Name:lower():find(text) or p.DisplayName:lower():find(text) then
             table.insert(targets, p)
@@ -106,31 +104,55 @@ local function CreateAction(name, callback)
     btn.MouseButton1Click:Connect(callback)
 end
 
-CreateAction("Balloon (V)", function()
+-- FUNÇÃO BALLOON + CABEÇA GRANDE (ESTILO ROUBE UM BRAINROT)
+CreateAction("Balloon Brainrot (V)", function()
     local char = player.Character
-    if char and char:FindFirstChild("HumanoidRootPart") then
-        local hrp = char.HumanoidRootPart
-        local balloon = Instance.new("Part", char)
-        balloon.Shape = Enum.PartType.Ball
-        balloon.Size = Vector3.new(4, 4, 4)
-        balloon.Color = Color3.fromRGB(255, 0, 0)
-        balloon.CanCollide = false
-        balloon.Position = hrp.Position + Vector3.new(0, 10, 0)
+    local head = char:FindFirstChild("Head")
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    
+    if char and head and hrp then
+        -- Efeito de Cabeça Inchada
+        local originalSize = head:FindFirstChild("Mesh") and head.Mesh.Scale or Vector3.new(1, 1, 1)
+        if head:FindFirstChild("Mesh") then
+            head.Mesh.Scale = Vector3.new(3, 3, 3) -- Incha a cabeça
+        else
+            -- Se não tiver mesh (R15), tenta usar SpecialMesh ou redimensionar
+            local m = Instance.new("SpecialMesh", head)
+            m.Scale = Vector3.new(3, 3, 3)
+        end
+
+        -- Criar o Balão
+        local b = Instance.new("Part", char)
+        b.Name = "BrainrotBalloon"
+        b.Shape = Enum.PartType.Ball
+        b.Size = Vector3.new(3.5, 3.5, 3.5)
+        b.Color = Color3.fromRGB(255, 100, 255) -- Rosa Brainrot
+        b.Material = Enum.Material.Neon
+        b.CanCollide = false
+        b.Position = hrp.Position + Vector3.new(0, 10, 0)
         
-        local rope = Instance.new("RopeConstraint", hrp)
-        local a0 = Instance.new("Attachment", hrp)
-        local a1 = Instance.new("Attachment", balloon)
+        -- Flutuação
+        local bv = Instance.new("BodyVelocity", hrp)
+        bv.Velocity = Vector3.new(0, 5, 0) -- Sobe devagar
+        bv.MaxForce = Vector3.new(0, 4000, 0)
+        
+        -- Corda
+        local rope = Instance.new("RopeConstraint", char)
+        local a0 = Instance.new("Attachment", b)
+        local a1 = Instance.new("Attachment", head)
+        a1.Position = Vector3.new(0, 0.5, 0)
         rope.Attachment0 = a0
         rope.Attachment1 = a1
-        rope.Length = 8
+        rope.Length = 6
         rope.Visible = true
+
+        task.wait(10) -- Duração do efeito
         
-        local bf = Instance.new("BodyForce", balloon)
-        bf.Force = Vector3.new(0, 5000, 0)
-        
-        task.wait(10)
-        balloon:Destroy()
-        a0:Destroy()
+        -- Resetar tudo
+        if head:FindFirstChild("Mesh") then head.Mesh.Scale = originalSize end
+        if head:FindFirstChild("SpecialMesh") then head.SpecialMesh:Destroy() end
+        b:Destroy()
+        bv:Destroy()
         rope:Destroy()
     end
 end)
