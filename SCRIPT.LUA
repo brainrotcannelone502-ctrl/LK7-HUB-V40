@@ -28,7 +28,6 @@ Title.TextSize = 16
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.BackgroundTransparency = 1
 
--- CAIXA DE TEXTO PARA NOME DO PLAYER
 local TargetInput = Instance.new("TextBox", Main)
 TargetInput.Size = UDim2.new(0, 120, 0, 30)
 TargetInput.Position = UDim2.new(0, 10, 0, 55)
@@ -73,7 +72,6 @@ CreateTab("Player")
 CreateTab("Visual")
 CreateTab("Fun")
 
--- FUNÇÃO DE TARGET CORRIGIDA
 local function GetTarget()
     local text = TargetInput.Text:lower()
     local targets = {}
@@ -108,23 +106,33 @@ local function CreateAction(name, callback)
     btn.MouseButton1Click:Connect(callback)
 end
 
--- BOTÕES DE AÇÃO
-CreateAction("FORÇAR 100K LOJA", function()
-    VALOR_ROBUX = 100000
-    task.spawn(function()
-        while true do
-            pcall(function()
-                for _, v in pairs(player.PlayerGui:GetDescendants()) do
-                    if v:IsA("TextLabel") or v:IsA("TextButton") then
-                        if v.Text:find("R%$") or v.Name:lower():find("robux") or v.Text:lower():find("robux") then
-                            v.Text = "R$ 100.000"
-                        end
-                    end
-                end
-            end)
-            task.wait(0.5)
-        end
-    end)
+CreateAction("Balloon (V)", function()
+    local char = player.Character
+    if char and char:FindFirstChild("HumanoidRootPart") then
+        local hrp = char.HumanoidRootPart
+        local balloon = Instance.new("Part", char)
+        balloon.Shape = Enum.PartType.Ball
+        balloon.Size = Vector3.new(4, 4, 4)
+        balloon.Color = Color3.fromRGB(255, 0, 0)
+        balloon.CanCollide = false
+        balloon.Position = hrp.Position + Vector3.new(0, 10, 0)
+        
+        local rope = Instance.new("RopeConstraint", hrp)
+        local a0 = Instance.new("Attachment", hrp)
+        local a1 = Instance.new("Attachment", balloon)
+        rope.Attachment0 = a0
+        rope.Attachment1 = a1
+        rope.Length = 8
+        rope.Visible = true
+        
+        local bf = Instance.new("BodyForce", balloon)
+        bf.Force = Vector3.new(0, 5000, 0)
+        
+        task.wait(10)
+        balloon:Destroy()
+        a0:Destroy()
+        rope:Destroy()
+    end
 end)
 
 CreateAction("Ragdoll", function()
