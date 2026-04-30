@@ -1,6 +1,6 @@
 local player = game.Players.LocalPlayer
 local sg = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-sg.Name = "LK7_KurdStyle_V3"
+sg.Name = "LK7_KurdStyle_Fixed_V4"
 sg.ResetOnSpawn = false
 
 local VALOR_ROBUX = 100000
@@ -10,7 +10,6 @@ local Main = Instance.new("Frame", sg)
 Main.Size = UDim2.new(0, 550, 0, 380)
 Main.Position = UDim2.new(0.5, -275, 0.5, -190)
 Main.BackgroundColor3 = Color3.fromRGB(15, 16, 22)
-Main.BorderSizePixel = 0
 Main.Active = true
 Main.Draggable = true
 Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 10)
@@ -20,15 +19,16 @@ TopBar.Size = UDim2.new(1, 0, 0, 50)
 TopBar.BackgroundTransparency = 1
 
 local Title = Instance.new("TextLabel", TopBar)
-Title.Text = "LK7 HUB - V3 FINAL"
+Title.Text = "LK7 HUB - V4 FIXED"
 Title.Size = UDim2.new(0, 300, 1, 0)
 Title.Position = UDim2.new(0, 15, 0, 0)
 Title.TextColor3 = Color3.new(1, 1, 1)
-Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 16
+Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.BackgroundTransparency = 1
 
+-- CAIXA DE TEXTO PARA NOME DO PLAYER
 local TargetInput = Instance.new("TextBox", Main)
 TargetInput.Size = UDim2.new(0, 120, 0, 30)
 TargetInput.Position = UDim2.new(0, 10, 0, 55)
@@ -45,7 +45,6 @@ Sidebar.Size = UDim2.new(0, 120, 1, -100)
 Sidebar.Position = UDim2.new(0, 10, 0, 95)
 Sidebar.BackgroundTransparency = 1
 Sidebar.ScrollBarThickness = 0
-Sidebar.CanvasSize = UDim2.new(0, 0, 1.2, 0)
 Instance.new("UIListLayout", Sidebar).Padding = UDim.new(0, 5)
 
 local Content = Instance.new("Frame", Main)
@@ -74,6 +73,7 @@ CreateTab("Player")
 CreateTab("Visual")
 CreateTab("Fun")
 
+-- FUNÇÃO DE TARGET CORRIGIDA
 local function GetTarget()
     local text = TargetInput.Text:lower()
     local targets = {}
@@ -97,42 +97,6 @@ local function SendVisualChat(msg)
     end
 end
 
-local function RocketEffect()
-    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-    if hrp then
-        local fire = Instance.new("Fire", hrp)
-        fire.Size = 10
-        fire.Heat = 20
-        local smoke = Instance.new("Smoke", hrp)
-        smoke.Size = 5
-        
-        local bv = Instance.new("BodyVelocity", hrp)
-        bv.Velocity = Vector3.new(0, 100, 0)
-        bv.MaxForce = Vector3.new(0, math.huge, 0)
-        
-        task.wait(2)
-        fire:Destroy()
-        smoke:Destroy()
-        bv:Destroy()
-    end
-end
-
-local function AtivarSuperVisual()
-    VALOR_ROBUX = 100000
-    task.spawn(function()
-        while true do
-            for _, v in pairs(player.PlayerGui:GetDescendants()) do
-                if v:IsA("TextLabel") or v:IsA("TextButton") then
-                    if v.Text:find("R%$") or v.Name:lower():find("robux") or v.Text:lower():find("robux") then
-                        v.Text = "R$ 100.000"
-                    end
-                end
-            end
-            task.wait(1)
-        end
-    end)
-end
-
 local function CreateAction(name, callback)
     local btn = Instance.new("TextButton", Content)
     btn.BackgroundColor3 = Color3.fromRGB(30, 31, 40)
@@ -144,15 +108,52 @@ local function CreateAction(name, callback)
     btn.MouseButton1Click:Connect(callback)
 end
 
-CreateAction("ATIVAR 100K VISUAL", AtivarSuperVisual)
-CreateAction("Rocket Fogo (V)", RocketEffect)
-CreateAction("Chat: Obrigado", function() SendVisualChat("Obrigado!") end)
-CreateAction("Chat: Vlw!", function() SendVisualChat("Vlw mano!") end)
-CreateAction("Ragdoll", function()
-    player.Character.Humanoid:ChangeState(16)
-    task.wait(2)
-    player.Character.Humanoid:ChangeState(8)
+-- BOTÕES DE AÇÃO
+CreateAction("FORÇAR 100K LOJA", function()
+    VALOR_ROBUX = 100000
+    task.spawn(function()
+        while true do
+            pcall(function()
+                for _, v in pairs(player.PlayerGui:GetDescendants()) do
+                    if v:IsA("TextLabel") or v:IsA("TextButton") then
+                        if v.Text:find("R%$") or v.Name:lower():find("robux") or v.Text:lower():find("robux") then
+                            v.Text = "R$ 100.000"
+                        end
+                    end
+                end
+            end)
+            task.wait(0.5)
+        end
+    end)
 end)
+
+CreateAction("Ragdoll", function()
+    local hum = player.Character:FindFirstChildOfClass("Humanoid")
+    if hum then
+        hum:ChangeState(Enum.HumanoidStateType.Physics)
+        task.wait(2)
+        hum:ChangeState(Enum.HumanoidStateType.GettingUp)
+    end
+end)
+
+CreateAction("Rocket Fogo (V)", function()
+    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        local fire = Instance.new("Fire", hrp)
+        fire.Size, fire.Heat = 12, 25
+        local smoke = Instance.new("Smoke", hrp)
+        smoke.Size, smoke.Opacity = 8, 0.5
+        local bv = Instance.new("BodyVelocity", hrp)
+        bv.MaxForce = Vector3.new(0, math.huge, 0)
+        bv.Velocity = Vector3.new(0, 150, 0)
+        task.wait(2.5)
+        fire:Destroy(); smoke:Destroy(); bv:Destroy()
+    end
+end)
+
+CreateAction("Chat: Obrigado", function() SendVisualChat("Obrigado") end)
+CreateAction("Chat: Tmj", function() SendVisualChat("Tmj") end)
+CreateAction("Chat: Vlw", function() SendVisualChat("Vlw!") end)
 
 local RobuxDisplay = Instance.new("TextLabel", Main)
 RobuxDisplay.Size = UDim2.new(0, 200, 0, 30)
