@@ -1,113 +1,115 @@
 local player = game.Players.LocalPlayer
 local sg = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-sg.Name = "LK7_Brainrot_V2"
+sg.Name = "LK7_KurdStyle_V6"
 sg.ResetOnSpawn = false
 
-local TECLA_TOGGLE = Enum.KeyCode.P
+-- Configurações de Cores e Estilo (Baseado no vídeo)
+local CorFundo = Color3.fromRGB(15, 10, 30)
+local CorBorda = Color3.fromRGB(120, 50, 255)
+local CorBotao = Color3.fromRGB(45, 20, 80)
 
--- DESIGN PRINCIPAL (ESTILO ROXO DO VÍDEO)
-local Main = Instance.new("Frame", sg)
-Main.Size = UDim2.new(0, 500, 0, 350)
-Main.Position = UDim2.new(0.5, -250, 0.5, -175)
-Main.BackgroundColor3 = Color3.fromRGB(25, 10, 50) -- Roxo Escuro
-Main.Active = true
-Main.Draggable = true
-local MainCorner = Instance.new("UICorner", Main)
-MainCorner.CornerRadius = UDim.new(0, 12)
-
--- BARRA LATERAL (TABS)
-local Sidebar = Instance.new("Frame", Main)
-Sidebar.Size = UDim2.new(0, 130, 1, -20)
-Sidebar.Position = UDim2.new(0, 10, 0, 10)
-Sidebar.BackgroundColor3 = Color3.fromRGB(35, 15, 70)
-Instance.new("UICorner", Sidebar)
-
-local TabList = Instance.new("UIListLayout", Sidebar)
-TabList.Padding = UDim.new(0, 8)
-TabList.HorizontalAlignment = Enum.HorizontalAlignment.Center
-
--- ÁREA DE CONTEÚDO (BOTÕES)
-local Container = Instance.new("ScrollingFrame", Main)
-Container.Size = UDim2.new(1, -160, 1, -60)
-Container.Position = UDim2.new(0, 150, 0, 50)
-Container.BackgroundTransparency = 1
-Container.CanvasSize = UDim2.new(0, 0, 1.5, 0)
-Container.ScrollBarThickness = 2
-
-local Grid = Instance.new("UIGridLayout", Container)
-Grid.CellSize = UDim2.new(0, 160, 0, 35)
-Grid.CellPadding = UDim2.new(0, 10, 0, 10)
-
--- FUNÇÕES DE AJUDA
-local function CreateAction(name, callback)
-    local btn = Instance.new("TextButton", Container)
-    btn.Size = UDim2.new(0, 160, 0, 35)
-    btn.BackgroundColor3 = Color3.fromRGB(50, 20, 100)
-    btn.Text = name
-    btn.TextColor3 = Color3.new(1, 1, 1)
-    btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 12
-    Instance.new("UICorner", btn)
-    btn.MouseButton1Click:Connect(callback)
+local function CriarJanela(nome, tamanho, posicao)
+    local Frame = Instance.new("Frame", sg)
+    Frame.Name = nome
+    Frame.Size = tamanho
+    Frame.Position = posicao
+    Frame.BackgroundColor3 = CorFundo
+    Frame.BorderSizePixel = 2
+    Frame.BorderColor3 = CorBorda
+    Frame.Active = true
+    Frame.Draggable = true
+    
+    local Title = Instance.new("TextLabel", Frame)
+    Title.Size = UDim2.new(1, 0, 0, 30)
+    Title.Text = nome
+    Title.TextColor3 = Color3.new(1, 1, 1)
+    Title.BackgroundColor3 = CorBorda
+    Title.Font = Enum.Font.GothamBold
+    Title.TextSize = 14
+    
+    return Frame
 end
 
--- --- NOVAS FUNÇÕES DO VÍDEO ---
+-- 1. PAINEL ESQUERDO: Tsk Fake Tools
+local PainelTools = CriarJanela("Tsk Fake Tools", UDim2.new(0, 200, 0, 280), UDim2.new(0, 50, 0.5, -140))
+local InputPlayer = Instance.new("TextBox", PainelTools)
+InputPlayer.Size = UDim2.new(0.8, 0, 0, 30)
+InputPlayer.Position = UDim2.new(0.1, 0, 0.15, 0)
+InputPlayer.PlaceholderText = "select player"
+InputPlayer.BackgroundColor3 = CorBotao
+InputPlayer.TextColor3 = Color3.new(1,1,1)
 
--- 1. FAKE PURCHASE (SIMULAR COMPRA)
-CreateAction("Fake Buy Admin", function()
-    -- Simula a janelinha de compra do Roblox
-    local fakeGui = Instance.new("Frame", sg)
-    fakeGui.Size = UDim2.new(0, 300, 0, 150)
-    fakeGui.Position = UDim2.new(0.5, -150, 0.5, -75)
-    fakeGui.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    Instance.new("UICorner", fakeGui)
-    
-    local txt = Instance.new("TextLabel", fakeGui)
-    txt.Size = UDim2.new(1, 0, 0.6, 0)
-    txt.Text = "Você deseja comprar 'Admin Commands'?"
-    txt.TextColor3 = Color3.new(1,1,1)
-    txt.BackgroundTransparency = 1
+-- 2. PAINEL DIREITO: Tsk Fake Robux (Painel Principal do vídeo)
+local PainelRobux = CriarJanela("Tsk Fake Robux", UDim2.new(0, 220, 0, 320), UDim2.new(1, -270, 0.5, -160))
+local ListLayout = Instance.new("UIListLayout", PainelRobux)
+ListLayout.Padding = UDim.new(0, 5)
+ListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+Instance.new("Frame", PainelRobux).Size = UDim2.new(0,0,0,35) -- Espaçador
 
-    local buy = Instance.new("TextButton", fakeGui)
-    buy.Size = UDim2.new(0, 100, 0, 30)
-    buy.Position = UDim2.new(0.5, -50, 0.7, 0)
-    buy.Text = "Comprar"
-    buy.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
-    
-    buy.MouseButton1Click:Connect(function()
-        fakeGui:Destroy()
-        -- Mensagem de sucesso fake
-        print("Compra realizada com sucesso!")
-    end)
+local function AddButton(nome, parent, func)
+    local btn = Instance.new("TextButton", parent)
+    btn.Size = UDim2.new(0.9, 0, 0, 30)
+    btn.BackgroundColor3 = CorBotao
+    btn.Text = nome
+    btn.TextColor3 = Color3.new(1, 1, 1)
+    btn.Font = Enum.Font.GothamSemibold
+    btn.TextSize = 12
+    btn.MouseButton1Click:Connect(func)
+    return btn
+end
+
+-- Funcionalidades do Vídeo
+AddButton("Ragdoll", PainelRobux, function()
+    local hum = player.Character:FindFirstChildOfClass("Humanoid")
+    if hum then hum:ChangeState(Enum.HumanoidStateType.Physics) task.wait(2) hum:ChangeState(Enum.HumanoidStateType.GettingUp) end
 end)
 
--- 2. FLASH TP (COMO PEDIDO ANTERIORMENTE)
-CreateAction("Flash TP (P)", function()
+AddButton("Rocket", PainelRobux, function()
+    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        local bv = Instance.new("BodyVelocity", hrp)
+        bv.MaxForce = Vector3.new(0, math.huge, 0)
+        bv.Velocity = Vector3.new(0, 150, 0)
+        task.wait(2) bv:Destroy()
+    end
+end)
+
+AddButton("Balloon", PainelRobux, function()
+    -- Lógica do Balão que você já usava no Dragon Luck Block
+    local b = Instance.new("Part", player.Character)
+    b.Shape = Enum.PartType.Ball
+    b.Size = Vector3.new(3,3,3)
+    b.Position = player.Character.Head.Position + Vector3.new(0,5,0)
+    local rope = Instance.new("RopeConstraint", player.Character)
+    local a0 = Instance.new("Attachment", b)
+    local a1 = Instance.new("Attachment", player.Character.Head)
+    rope.Attachment0 = a0 rope.Attachment1 = a1 rope.Length = 5
+end)
+
+-- 3. PAINEL DE CHAT (Lógica para mensagens visuais)
+local PainelChat = CriarJanela("Chat Panel", UDim2.new(0, 180, 0, 150), UDim2.new(0.5, -90, 0.8, -75))
+AddButton("Chat: Obrigado", PainelChat, function() 
+    game:GetService("Chat"):Chat(player.Character.Head, "Obrigado", "White") 
+end)
+
+-- Botão Flash TP (P)
+AddButton("Flash TP [P]", PainelRobux, function()
     local char = player.Character
     if char and char:FindFirstChild("Brainrot") then
-        char.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame * CFrame.new(0, 0, -50)
+        char.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame * CFrame.new(0, 0, -60)
     end
 end)
 
--- 3. NIGHT VISION
-local nvOn = false
-CreateAction("Night Vision", function()
-    nvOn = not nvOn
-    game.Lighting.Brightness = nvOn and 3 or 1
-    game.Lighting.OutdoorAmbient = nvOn and Color3.new(1,1,1) or Color3.fromRGB(127, 127, 127)
-end)
+-- Exibição de Robux Fake (Igual ao vídeo)
+local RobuxTxt = Instance.new("TextLabel", PainelRobux)
+RobuxTxt.Size = UDim2.new(1, 0, 0, 30)
+RobuxTxt.Text = "Robux: 11.284"
+RobuxTxt.TextColor3 = Color3.fromRGB(255, 255, 0)
+RobuxTxt.BackgroundTransparency = 1
 
--- 4. INVERSE (VIRAR TELA)
-CreateAction("Inverse View", function()
-    local cam = workspace.CurrentCamera
-    cam.CFrame = cam.CFrame * CFrame.Angles(0, 0, math.rad(180))
-end)
-
--- SISTEMA DE TOGGLE
+-- Atalho para ocultar tudo (Tecla P)
 game:GetService("UserInputService").InputBegan:Connect(function(i, g)
-    if not g and i.KeyCode == TECLA_TOGGLE then 
-        Main.Visible = not Main.Visible 
+    if not g and i.KeyCode == Enum.KeyCode.P then
+        sg.Enabled = not sg.Enabled
     end
 end)
-
-print("LK7 HUB - Brainrot Edition Carregado!")
